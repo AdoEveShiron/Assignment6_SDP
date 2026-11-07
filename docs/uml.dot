@@ -1,0 +1,31 @@
+digraph G {
+  rankdir=BT; nodesep=0.45; ranksep=0.8;
+  node [shape=record, fontname="Helvetica", fontsize=11];
+  edge [fontname="Helvetica", fontsize=10];
+
+  Element [label="{\<\<interface\>\>\nElement|+ getName() : String\l+ accept(visitor : Visitor) : void\l}"];
+  Visitor [label="{\<\<interface\>\>\nVisitor|+ visit(file : FileNode) : void\l+ visit(directory : DirectoryNode) : void\l}"];
+  N [label="{Node (abstract)|- name : String\l~ parent : DirectoryNode\l|+ getName() : String\l~ getParent() : DirectoryNode\l~ setParent(parent) : void\l}"];
+  FileNode [label="{FileNode|- size : long\l|+ getSize() : long\l+ accept(visitor) : void\l}"];
+  DirectoryNode [label="{DirectoryNode|- children : Map\<String, Node\>\l|+ add(child : Node) : void\l+ remove(childName : String) : void\l+ getChildren() : List\<Node\>\l+ accept(visitor) : void\l}"];
+
+  Total [label="{TotalSizeVisitor|- totalSize : long\l|+ calculate(root : Element) : long\l+ visit(file) : void\l+ visit(directory) : void\l}"];
+  Search [label="{SearchVisitor|- nameContains : String\l- minSize : long\l- foundPaths : List\<String\>\l|+ search(root : Element) : List\<String\>\l+ visit(file) : void\l+ visit(directory) : void\l}"];
+  Stats [label="{StatisticsVisitor|- fileCount : int\l- directoryCount : int\l- maxDepth : int\l|+ collect(root : Element) : void\l+ visit(file) : void\l+ visit(directory) : void\l}"];
+  Client [label="{Main (Client)|+ main(args) : void\l}"];
+
+  N -> Element [style=dashed, arrowhead=empty];
+  FileNode -> N [arrowhead=empty];
+  DirectoryNode -> N [arrowhead=empty];
+  DirectoryNode -> N [dir=both, arrowhead=vee, arrowtail=diamond, headlabel="0..*", labeldistance=2.2, constraint=false];
+  Element -> Visitor [style=dashed, arrowhead=vee, label="accept(visitor)"];
+  Total -> Visitor [style=dashed, arrowhead=empty];
+  Search -> Visitor [style=dashed, arrowhead=empty];
+  Stats -> Visitor [style=dashed, arrowhead=empty];
+  Client -> Total [style=dashed, arrowhead=vee];
+  Client -> Search [style=dashed, arrowhead=vee];
+  Client -> Stats [style=dashed, arrowhead=vee];
+  Client -> DirectoryNode [style=dashed, arrowhead=vee];
+  {rank=same; Total; Search; Stats}
+  {rank=same; FileNode; DirectoryNode}
+}
